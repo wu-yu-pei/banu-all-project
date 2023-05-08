@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <input type="number" name="" id="input">
+  <button id="btn">猜一下</button>
+  <div id="tips">你还剩10次机会,本次猜测范围0-100</div>
+  <script>
+    const inputel = document.querySelector('#input')
+    const btn = document.querySelector('#btn')
+    const tips = document.querySelector('#tips')
+
+    // 十次机会
+    let count = 10
+    // 0 - 100 的 顺序数组
+    let counts = getAOrderArray(100)
+    // 炸弹数字
+    let bombCount = getRandomInt(100)
+
+    console.log('炸弹数字:', bombCount);
+
+    btn.addEventListener("click",() => {
+      let currentCount = inputel.value * 1
+      let currentCountIndex = getIndexFromArray(counts, currentCount)
+      let bombCountIndex = getIndexFromArray(counts, bombCount)
+
+      // 边界判断
+      if(currentCountIndex == -1) {
+        return  alert('猜测超出边界')
+      }
+
+      // 猜测成功 游戏结束
+      if(count-- == 0) {
+        return  resetData('成功了，你没有猜中炸弹数字！,已重置游戏')
+      }
+
+      // 猜测失败 游戏结束
+      if(currentCount == bombCount) {
+        return  resetData('失败了，你猜中了炸弹数字！,已重置游戏')
+      }
+
+      // 处理
+      if(currentCountIndex > bombCountIndex) {
+        counts.splice(currentCountIndex - counts.length)
+      }else {
+        counts.splice(0, currentCountIndex + 1)
+      }
+
+      tips.innerHTML = `你还剩${count}次机会,本次猜测范围${counts[0]}-${counts[counts.length - 1]}`
+    })
+
+
+    // 获取一个max内的随机整数
+    function getRandomInt(max = 100) {
+      return Math.floor(Math.random() * max + 1)
+    }
+
+    // 获取指元素在数组中的位置
+    function getIndexFromArray(array, value) {
+      return array.indexOf(value)
+    }
+
+    // 获取一个count顺序数组
+    function getAOrderArray(count = 100) {
+      return new Array(count).fill(0).map((_, index) => index + 1)
+    }
+
+    // 重置数据
+    function resetData(message) {
+      count = 10
+      counts = getAOrderArray(100)
+      tips.innerHTML = `你还剩${count}次机会,本次猜测范围${counts[0]}-${counts[counts.length - 1]}`
+      bombCount = getRandomInt(100)
+      console.log('炸弹数字：', bombCount);
+      alert(message)
+    }
+  </script>
+</body>
+</html>
