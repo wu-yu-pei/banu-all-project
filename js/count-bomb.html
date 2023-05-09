@@ -7,26 +7,34 @@
   <title>Document</title>
 </head>
 <body>
+  按 f12 在控制台玩
   <script>
 
-    // 十次机会
-    let count = 10
+    const TIMES = 10
+    const MIN = -50
+    const MAX = 50
 
-    const MIN = -10
-
-    const MAX = 100
+    let counts, bombCount, count
 
     //  初始化 游戏
-    function initGame(min = 0, max = 100) {
+    function initGame(min = 0, max = 100, times = 10) {
+      count = times
 
       counts = getAOrderArray(min, max)
 
-      bombCount = getRandoMINt(min, max)
+      bombCount = getRandomInt(min, max)
 
       console.log(
-        `本次游戏的炸弹数字为: ${bombCount},猜测范围${min}-${max}.
-        在控制台调用playGame函数开始游戏 例如:playGame(10).
-        在控制台调用resetData函数重置游戏 例如:resetData()`
+        `
+                          游戏开始
+        -----------------------------------------------------------
+       · 本次游戏的炸弹数字为: ${bombCount}.(这段输入用于调试)
+       · 猜测范围${min}-${max}.
+       · 在控制台调用playGame函数开始游戏 例如:playGame(10).
+       · 在控制台调用resetData函数重置游戏 例如:resetData()
+        -----------------------------------------------------------
+
+        `
       );
     }
 
@@ -41,14 +49,12 @@
 
       // 猜测失败 游戏结束
       if(currentCount == bombCount) {
-        console.log('失败了，你猜中了炸弹数字')
-        return initGame(MIN, MAX)
+        return resetData('失败了，你猜中了炸弹数字')
       }
 
       // 猜测成功 游戏结束
       if(--count == 0) {
-        console.log('成功了，你没有猜中炸弹数字')
-        return initGame(MIN, MAX)
+        return resetData('成功了，你没有猜中炸弹数字')
       }
 
 
@@ -60,12 +66,12 @@
         counts.splice(0, currentCountIndex + 1)
       }
 
-      console.log(`你还剩${count}次机会,本次猜测范围${counts[0]}-${counts[counts.length - 1]}`)
+      console.log(`你还可以猜${count}次,本次猜测范围${counts[0]}-${counts[counts.length - 1]}`)
     }
 
     // 获取一个MIN - MAX内的随机整数
-    function getRandoMINt(min, max) {
-      return Math.floor(Math.random() * max + min + 1)
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)  + min)
     }
 
     // 获取指元素在数组中的位置
@@ -80,14 +86,11 @@
 
     // 重置数据
     function resetData(message = '已重置游戏') {
-      count = 10
-      counts = getAOrderArray(MIN, MAX)
-      bombCount = getRandoMINt(MIN, MAX)
       console.log(message)
-      console.log('炸弹数字：', bombCount);
+      initGame(MIN, MAX, TIMES)
     }
 
-    initGame(MIN, MAX)
+    initGame(MIN, MAX, TIMES)
   </script>
 </body>
 </html>
