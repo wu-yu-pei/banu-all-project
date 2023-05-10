@@ -33,38 +33,6 @@
     </script>
 
     <script>
-      // ui
-      const btn = document.querySelector('#btn');
-      const input = document.querySelector('#input');
-      const tips = document.querySelector('#tips');
-
-      function onPlay(times, min, max) {
-        tips.innerText = `游戏开始，你还需要猜${times}次,猜测范围${min}-${max}`;
-      }
-
-      function onInit(times, min, max) {
-        tips.innerText = `游戏开始，你还需要猜${times}次,猜测范围${min}-${max}`;
-      }
-
-      function onFail(times, min, max) {
-        tips.innerText = `猜测超出边界值,请重新猜测，你还需要猜${times}次,猜测范围${min}-${max}`;
-      }
-
-      function onOver(isSuccess) {
-        if (isSuccess) {
-          alert('你赢了');
-        } else {
-          alert('你输了');
-        }
-        input.value = '';
-      }
-
-      btn.addEventListener('click', (e) => {
-        input.value && game.playGame(input.value * 1);
-      });
-    </script>
-
-    <script>
       // 逻辑
       class Game {
         constructor({ min, max, times, onPlay, onFail, onInit, onOver }) {
@@ -120,6 +88,37 @@
         }
       }
 
+      // ui
+      const btn = document.querySelector('#btn');
+      const input = document.querySelector('#input');
+      const tips = document.querySelector('#tips');
+
+      function onPlay(times, min, max) {
+        tips.innerText = `游戏开始，你还需要猜${times}次,猜测范围${min}-${max}`;
+      }
+
+      function onInit(times, min, max) {
+        tips.innerText = `游戏开始，你还需要猜${times}次,猜测范围${min}-${max}`;
+      }
+
+      function onFail(times, min, max) {
+        tips.innerText = `猜测超出边界值,请重新猜测，你还需要猜${times}次,猜测范围${min}-${max}`;
+      }
+
+      function onOver(isSuccess) {
+        if (isSuccess) {
+          alert('你赢了');
+        } else {
+          alert('你输了');
+        }
+        input.value = '';
+      }
+
+      btn.addEventListener('click', (e) => {
+        input.value && game.playGame(input.value * 1);
+      });
+
+      
       const game = new Game({
         min: -10,
         max: 50,
