@@ -5,9 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <style></style>
   </head>
   <body>
-    按 f12 在控制台玩
+    <div class="box">
+      <div id="tips"></div>
+      <input type="number" id="input" placeholder="请输入你猜测的数字" />
+      <button id="btn">我猜</button>
+    </div>
 
     <script>
       // utils
@@ -26,96 +31,51 @@
         return new Array(Math.abs(min - max) + 1).fill(0).map((_, index) => index + min);
       }
     </script>
-    <!-- <script>
-      const TIMES = 2;
-      const MIN = -50;
-      const MAX = 50;
 
-      let counts, bombCount, count;
-
-      //  初始化 游戏
-      function initGame(min = 0, max = 100, times = 10) {
-        count = times;
-
-        counts = getAOrderArray(min, max);
-
-        bombCount = getRandomInt(min, max);
-
-        console.log(
-          `
-                          游戏开始
-        -----------------------------------------------------------
-       · 本次游戏的炸弹数字为: ${bombCount}.(这段输入用于调试)
-       · 猜测范围${min}-${max}.
-       · 在控制台调用playGame函数开始游戏 例如:playGame(10).
-       · 在控制台调用resetData函数重置游戏 例如:resetData()
-        -----------------------------------------------------------
-
-        `
-        );
-      }
-
-      function playGame(currentCount = '') {
-        let currentCountIndex = getIndexFromArray(counts, currentCount);
-        let bombCountIndex = getIndexFromArray(counts, bombCount);
-
-        // 边界判断
-        if (currentCountIndex == -1) {
-          return console.log(
-            `猜测超出边界值,请重新猜测，你还剩${count}次机会,猜测范围${counts[0]}-${counts[counts.length - 1]}`
-          );
-        }
-
-        // 猜测失败 游戏结束
-        if (currentCount == bombCount) {
-          return resetData('失败了，你猜中了炸弹数字');
-        }
-
-        // 猜测成功 游戏结束
-        if (--count == 0) {
-          return resetData('成功了，你没有猜中炸弹数字');
-        }
-
-        if (currentCountIndex > bombCountIndex) {
-          // 剪去 右边
-          counts.splice(currentCountIndex - counts.length);
-        } else {
-          // 剪去 左边
-          counts.splice(0, currentCountIndex + 1);
-        }
-
-        console.log(`你还可以猜${count}次,本次猜测范围${counts[0]}-${counts[counts.length - 1]}`);
-      }
-
-      // 获取一个MIN - MAX内的随机整数
-      function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1) + min);
-      }
-
-      // 获取指元素在数组中的位置
-      function getIndexFromArray(array, value) {
-        return array.indexOf(value);
-      }
-
-      // 获取一个count顺序数组
-      function getAOrderArray(min, max) {
-        return new Array(Math.abs(min - max) + 1).fill(0).map((_, index) => index + min);
-      }
-
-      // 重置数据
-      function resetData(message = '已重置游戏') {
-        console.log(message);
-        initGame(MIN, MAX, TIMES);
-      }
-
-      initGame(MIN, MAX, TIMES);
-    </script> -->
     <script>
+      // ui
+      const btn = document.querySelector('#btn');
+      const input = document.querySelector('#input');
+      const tips = document.querySelector('#tips');
+
+      function onPlay(times, min, max) {
+        tips.innerText = `游戏开始，你还需要猜${times}次,猜测范围${min}-${max}`;
+      }
+
+      function onInit(times, min, max) {
+        tips.innerText = `游戏开始，你还需要猜${times}次,猜测范围${min}-${max}`;
+      }
+
+      function onFail(times, min, max) {
+        tips.innerText = `猜测超出边界值,请重新猜测，你还需要猜${times}次,猜测范围${min}-${max}`;
+      }
+
+      function onOver(isSuccess) {
+        if (isSuccess) {
+          alert('你赢了');
+        } else {
+          alert('你输了');
+        }
+        input.value = '';
+      }
+
+      btn.addEventListener('click', (e) => {
+        input.value && game.playGame(input.value * 1);
+      });
+    </script>
+
+    <script>
+      // 逻辑
       class Game {
-        constructor({ min, max, times }) {
+        constructor({ min, max, times, onPlay, onFail, onInit, onOver }) {
           this.MIN = min;
           this.MAX = max;
           this.TIMES = times;
+
+          this.onPlay = onPlay;
+          this.onFail = onFail;
+          this.onInit = onInit;
+          this.onOver = onOver;
 
           this.initGame(this.MIN, this.MAX, this.TIMES);
         }
@@ -124,18 +84,7 @@
           this.count = times;
           this.counts = getAOrderArray(min, max);
           this.bombCount = getRandomInt(min, max);
-          console.log(
-            `
-                              游戏开始
-            -----------------------------------------------------------
-          · 本次游戏的炸弹数字为: ${this.bombCount}.(这段输入用于调试)
-          · 猜测范围${this.min}-${this.max}.
-          · 在控制台调用playGame函数开始游戏 例如:playGame(10).
-          · 在控制台调用resetData函数重置游戏 例如:resetData()
-            -----------------------------------------------------------
-
-            `
-          );
+          this.onInit(times, min, max);
         }
 
         playGame(currentCount = '') {
@@ -144,21 +93,19 @@
 
           // 边界判断
           if (currentCountIndex == -1) {
-            return console.log(
-              `猜测超出边界值,请重新猜测，你还剩${this.count}次机会,猜测范围${this.counts[0]}-${
-                this.counts[this.counts.length - 1]
-              }`
-            );
+            return this.onFail(this.count, this.counts[0], this.counts[this.counts.length - 1]);
           }
 
           // 猜测失败 游戏结束
           if (currentCount == this.bombCount) {
-            return this.resetData('失败了，你猜中了炸弹数字');
+            this.onOver(false);
+            return this.initGame(this.MIN, this.MAX, this.TIMES);
           }
 
           // 猜测成功 游戏结束
           if (--this.count == 0) {
-            return this.resetData('成功了，你没有猜中炸弹数字');
+            this.onOver(true);
+            return this.initGame(this.MIN, this.MAX, this.TIMES);
           }
 
           if (currentCountIndex > bombCountIndex) {
@@ -169,14 +116,7 @@
             this.counts.splice(0, currentCountIndex + 1);
           }
 
-          console.log(
-            `你还可以猜${this.count}次,本次猜测范围${this.counts[0]}-${this.counts[this.counts.length - 1]}`
-          );
-        }
-
-        resetData(message = '已重置游戏') {
-          console.log(message);
-          this.initGame(this.MIN, this.MAX, this.TIMES);
+          this.onPlay(this.count, this.counts[0], this.counts[this.counts.length - 1]);
         }
       }
 
@@ -184,6 +124,10 @@
         min: -10,
         max: 50,
         times: 10,
+        onPlay,
+        onFail,
+        onInit,
+        onOver,
       });
     </script>
   </body>
