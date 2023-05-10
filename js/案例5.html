@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        display: flex;
+        width: 100vw;
+        height: 100vh;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+      }
+
+      .box {
+        display: grid;
+        padding: 10px;
+        border: 1px solid red;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 10px;
+        width: 300px;
+        height: 300px;
+      }
+
+      .marker {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .cell {
+        border: 1px solid red;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 40px;
+      }
+      button {
+        width: 100px;
+        height: 50px;
+        outline: none;
+        border: none;
+        color: #fff;
+        background-color: red;
+      }
+
+      button:active {
+        background-color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="state"></div>
+    <div class="box">
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+      <div class="cell"></div>
+    </div>
+    <div>
+      <button class="btnBegin">开始游戏</button>
+      <button class="btnRestart">重新开始</button>
+    </div>
+
+    <script>
+      const box = document.querySelector('.box');
+      const state = document.querySelector(".state")
+      const cellELs = document.querySelectorAll('.cell');
+      const btnBeginEl = document.querySelector('.btnBegin');
+      const btnOverEl = document.querySelector('.btnOver');
+      const btnRestartEl = document.querySelector('.btnRestart');
+
+      class Game {
+        constructor(selfTag, outherTag, firstTag, resetCallback) {
+          this.step = 0;
+          this.isStart = false;
+
+          this.selfTag = selfTag;
+          this.outherTag = outherTag;
+          this.currentTag = firstTag;
+
+          this.resetCallback = resetCallback;
+
+          this.results = new Array(9).fill(0);
+        }
+
+        start() {
+          this.isStart = true;
+        }
+
+        play(position, callback) {
+          if (!this.isStart) return;
+
+          if (this.results[position] != 0) return;
+
+          this.results[position] = this.currentTag;
+          callback && callback(this.currentTag);
+
+          if (this.checkSuccess()) {
+            return this.reset(this.resetCallback);
+          }
+
+          this.next();
+        }
+
+        next() {
+          this.step++;
+          this.currentTag = this.currentTag == this.selfTag ? this.outherTag : this.selfTag;
+        }
+
+        reset(fn) {
+          this.results = new Array(9).fill(0);
+          this.step = 0;
+          fn && fn();
+        }
+
+        checkSuccess() {
+          const successEnum = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6],
+          ];
+
+          for (let i = 0; i < successEnum.length; i++) {
+            if (
+              this.results[successEnum[i][0]] == this.results[successEnum[i][1]] &&
+              this.results[successEnum[i][0]] == this.results[successEnum[i][2]] &&
+              this.results[successEnum[i][1]] == this.results[successEnum[i][2]] &&
+              this.results[successEnum[i][0]] != 0 &&
+              this.results[successEnum[i][1]] != 0 &&
+              this.results[successEnum[i][2]] != 0
+            ) {
+              console.log(this.results[successEnum[i][2]] + '赢了');
+              return true;
+            }
+          }
+
+          if (this.step == 8) {
+            console.log('平局');
+            return true;
+          }
+
+          return false;
+        }
+      }
+
+      const game = new Game('O', 'X', 'X', resetFn);
+
+
+      for (let i = 0; i < cellELs.length; i++) {
+        cellELs[i].addEventListener('click', function () {
+          game.play(i, (text) => {
+            this.innerText = text;
+          });
+        });
+      }
+
+      function resetFn() {
+        for (let i = 0; i < cellELs.length; i++) {
+          cellELs[i].innerHTML = '';
+        }
+      }
+
+      btnBeginEl.addEventListener('click', () => {
+        game.start();
+      });
+
+      btnRestartEl.addEventListener('click', () => {
+        game.reset(resetFn);
+        game.start();
+      });
+
+      // game.start()
+      // game.play(0)
+      // game.play(1)
+      // game.play(3)
+      // game.play(4)
+      // game.play(6)
+      // game.play(7)
+      // game.play(8)
+      // game.play(9)
+    </script>
+  </body>
+</html>

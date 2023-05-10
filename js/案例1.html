@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function request(options) {
+        return new Promise((resolve, reject) => {
+          const defaults = {
+            method: 'get',
+            url: '',
+            data: {},
+            params: {},
+            header: {
+              'Content-Type': 'application/json',
+            },
+          };
+
+          Object.assign(defaults, options);
+
+          // 创建ajax对象
+          const xhr = new XMLHttpRequest();
+
+          // get
+          if (defaults.method == 'get') {
+            let params = '';
+
+            for (let paramsKey in defaults.params) {
+              params += paramsKey + '=' + defaults.params[paramsKey] + '&';
+            }
+
+            params = params.substr(0, params.length - 1);
+
+            defaults.url = defaults.url + '?' + params;
+
+            xhr.open(defaults.method, defaults.url);
+            xhr.send();
+          }
+
+          // post
+          if (defaults.method == 'post') {
+            xhr.open(defaults.method, defaults.url);
+
+            const contentType = defaults.header['Content-Type'];
+
+            xhr.setRequestHeader('Content-Type', contentType);
+
+            xhr.send(JSON.stringify(defaults.data));
+          }
+
+          xhr.onload = function () {
+            const httpStatusCode = xhr.status;
+            const httpStatusTxt = xhr.statusText;
+            const responseText = xhr.responseText;
+
+            if (statusCode == 200) {
+              resolve({
+                httpStatusCode,
+                httpStatusTxt,
+                data: JSON.parse(responseText),
+              });
+            } else {
+              reject({
+                httpStatusCode,
+                httpStatusTxt,
+                data: JSON.parse(responseText),
+              });
+            }
+          };
+        });
+      }
+
+      request({
+        url: 'https://v0.yiketianqi.com/api',
+        method: 'get',
+        params: {
+          unescape: 1,
+          version: 'v91',
+          appid: '43656176',
+          appsecret: 'I42og6Lm',
+        },
+      }).then(({ httpStatusCode, httpStatusTxt, data }) => {
+        console.log(data);
+      });
+
+      request({
+        url: 'https://tenapi.cn/v2/phone',
+        method: 'post',
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        data: {
+          tel: '18383823927',
+        },
+      }).then(({ httpStatusCode, httpStatusTxt, data }) => {
+        console.log(data);
+      });
+
+      request({
+        url: 'http://http://scpcs.banu.cn:6625/api/tag',
+        method: 'post',
+        headers: { 'content-type': 'application/json' },
+        data: {
+          name: '我是一个标签',
+          type: 1,
+        },
+      }).then(({ httpStatusCode, httpStatusTxt, data }) => {
+        console.log(data);
+      });
+    </script>
+  </body>
+</html>
