@@ -55,19 +55,18 @@
   <body>
     <div class="state"></div>
     <div class="box">
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
-      <div class="cell"></div>
+      <div class="cell">X</div>
+      <div class="cell">X</div>
+      <div class="cell">O</div>
+      <div class="cell">X</div>
+      <div class="cell">O</div>
+      <div class="cell">X</div>
+      <div class="cell">O</div>
+      <div class="cell">X</div>
       <div class="cell"></div>
     </div>
     <div>
       <button class="btnBegin">开始游戏</button>
-      <button class="btnRestart">重新开始</button>
     </div>
 
     <script>
@@ -175,10 +174,6 @@
       }
 
       btnBeginEl.addEventListener('click', () => {
-        game.start();
-      });
-
-      btnRestartEl.addEventListener('click', () => {
         game.reset(resetFn);
         game.start();
       });
