@@ -13,7 +13,6 @@ export interface News {
   state: number;
   createAt: number;
   view: number;
-  images?: any[];
 }
 
 export interface Image {

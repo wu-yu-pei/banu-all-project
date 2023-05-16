@@ -26,29 +26,21 @@ class NewsService {
       where: {
         state: 1,
       },
+      include: [ImageModel],
     });
 
     return res;
   }
 
   async getNewsDetail(id: number): Promise<Model<News>> {
-    const res: any = await NewsModel.findOne({
+    const res: Model<News> = await NewsModel.findOne({
       where: {
         id,
       },
-    }).catch((err) => {
-      console.log(err);
+      include: [ImageModel],
     });
 
     if (!res) throw new BadRequest('文章不存在');
-
-    const images = await ImageModel.findAll({
-      where: {
-        news_id: res.dataValues.id,
-      },
-    });
-
-    res.dataValues.images = images;
 
     // 阅读数量 加1
     await NewsModel.update(

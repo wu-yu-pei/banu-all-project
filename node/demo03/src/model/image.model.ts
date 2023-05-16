@@ -11,7 +11,7 @@ const Image = sequelize.define(
     },
     news_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     url: {
       type: DataTypes.CHAR,

@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/index';
+import Image from './image.model';
 
 const News = sequelize.define(
   'news',
@@ -45,5 +46,9 @@ const News = sequelize.define(
 );
 
 News.sync({ alter: true });
+
+// 关联一下
+News.hasMany(Image, { sourceKey: 'id', foreignKey: 'news_id' });
+Image.belongsTo(News, { foreignKey: 'news_id', targetKey: 'id' });
 
 export default News;
