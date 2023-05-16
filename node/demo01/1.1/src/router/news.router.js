@@ -11,7 +11,7 @@ newRoute.get('/news', newsController.getNews);
 
 newRoute.get('/news/:id', verifyPipe.mustNumber(['id']), newsController.getNewsDetail);
 
-newRoute.put('/news/:id', verifyPipe.mustNumber(['id']), verifyPipe.required(['title', 'type', 'coneten']), newsController.updateNews);
+newRoute.put('/news/:id', verifyPipe.mustNumber(['id']), verifyPipe.required(['title', 'type', 'content']), newsController.updateNews);
 
 newRoute.delete('/news/:id', verifyPipe.mustNumber(['id']), newsController.deleteNews);
 
