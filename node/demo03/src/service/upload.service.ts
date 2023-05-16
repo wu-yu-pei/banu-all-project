@@ -1,5 +1,5 @@
 import path from 'path';
-import { createFileFolderByDate } from '../utils/index';
+import { createFileFolderByDate, getFolderNameByDate } from '../utils/index';
 import { BadRequest } from '../errors';
 import { Image } from '../types';
 import ImageModel from '../model/image.model';
@@ -17,7 +17,7 @@ class uploadService {
   async savaToDb(file: any, newsId?: number) {
     const fileExtName = file.mimetype.split('/')[1];
     const fileName = file.md5 + '.' + fileExtName;
-    const folderName = createFileFolderByDate();
+    const folderName = getFolderNameByDate();
 
     const result: Model<Image> = await ImageModel.create({
       url: `/images/${folderName}/${fileName}`,
